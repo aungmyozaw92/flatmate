@@ -33,6 +33,31 @@ const login = async (req, res) => {
     .json({ status: true, msg: "User logged in successful" });
 };
 
+const profile = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.userId });
+  const userData = user.toJSON();
+  res.status(StatusCodes.OK).json({ user: userData });
+};
+
+const updatePassword = async (req, res) => {
+  // const { old_password, new_password } = req.body;
+  const user = await User.findOne({ _id: req.user.userId });
+
+  const correctPassword = await comparePassword(
+    req.body.old_password,
+    user.password
+  );
+  if (!correctPassword) {
+    throw new UnauthenticatedError("Invalid credentials");
+  }
+  const hashedPassword = await hashPassword(req.body.new_password);
+  user.password = hashedPassword;
+  user.save();
+  res
+    .status(StatusCodes.OK)
+    .json({ status: true, msg: "Password updated successfully" });
+};
+
 const logout = async (req, res) => {
   // res.cookie("token", "logout", {
   //   httpOnly: true,
@@ -44,4 +69,4 @@ const logout = async (req, res) => {
     .json({ status: true, msg: "User logout successful" });
 };
 
-export { register, login, logout };
+export { register, login, logout, profile, updatePassword };

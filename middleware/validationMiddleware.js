@@ -90,3 +90,10 @@ export const validateLoginInput = withValidationErrors([
     .withMessage("invalid email format"),
   body("password").notEmpty().withMessage("password is required"),
 ]);
+
+export const validateChangePasswordInput = withValidationErrors([
+  body("old_password").notEmpty().withMessage("old_password is required"),
+  body("new_password")
+    .notEmpty()
+    .withMessage("confirm new_password is required"),
+]);
